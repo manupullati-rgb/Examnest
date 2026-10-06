@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "Question": {
+      "title": "Question",
+      "description": "Examination question with options and solutions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "category": { "type": "string", "enum": ["Java", "Data Structures", "Python", "General Knowledge"] },
+        "question": { "type": "string", "maxLength": 1000 },
+        "codeSnippet": { "type": "string", "maxLength": 2000 },
+        "options": { "type": "array" },
+        "correctAnswerIndex": { "type": "number" },
+        "explanation": { "type": "string", "maxLength": 2000 },
+        "difficulty": { "type": "string", "enum": ["Easy", "Medium", "Hard"] }
+      },
+      "required": ["category", "question", "options", "correctAnswerIndex", "explanation"]
+    },
+    "ExamSubmission": {
+      "title": "ExamSubmission",
+      "description": "Student exam submission record with scores and answers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentName": { "type": "string", "maxLength": 100 },
+        "rollNumber": { "type": "string", "maxLength": 50 },
+        "category": { "type": "string" },
+        "totalQuestions": { "type": "number" },
+        "attempted": { "type": "number" },
+        "correctAnswers": { "type": "number" },
+        "wrongAnswers": { "type": "number" },
+        "unanswered": { "type": "number" },
+        "score": { "type": "number" },
+        "percentage": { "type": "number" },
+        "isPassed": { "type": "boolean" },
+        "timeTakenSeconds": { "type": "number" },
+        "submittedAt": { "type": "string" },
+        "answers": { "type": "array" }
+      },
+      "required": ["studentName", "rollNumber", "score", "totalQuestions", "percentage", "isPassed"]
+    },
+    "ExamConfig": {
+      "title": "ExamConfig",
+      "description": "Global examination properties and rules",
+      "type": "object",
+      "properties": {
+        "timeLimitMinutes": { "type": "number" },
+        "passingPercentage": { "type": "number" },
+        "questionsPerExam": { "type": "number" },
+        "shuffleQuestions": { "type": "boolean" },
+        "allowReviewAfterSubmission": { "type": "boolean" }
+      }
+    }
+  },
+  "firestore": {
+    "/questions/{questionId}": {
+      "schema": "Question",
+      "description": "Collection of prepared examination questions and solutions"
+    },
+    "/submissions/{submissionId}": {
+      "schema": "ExamSubmission",
+      "description": "Collection of completed student exam submissions and results"
+    },
+    "/config/exam_settings": {
+      "schema": "ExamConfig",
+      "description": "Global settings including exam time limits and passing criteria"
+    }
+  }
+}

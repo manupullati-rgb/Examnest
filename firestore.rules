@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global helper primitives
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    function incoming() { 
+      return request.resource.data; 
+    }
+    function existing() { 
+      return resource.data; 
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Examination Questions & Solutions Bank
+    match /questions/{questionId} {
+      allow read: if isValidId(questionId);
+      allow write: if isValidId(questionId) && 
+        incoming().category in ['Java', 'Data Structures', 'Python', 'General Knowledge'] &&
+        incoming().question is string && incoming().question.size() <= 1500 &&
+        incoming().options is list && incoming().options.size() == 4 &&
+        incoming().correctAnswerIndex is number &&
+        incoming().correctAnswerIndex >= 0 && incoming().correctAnswerIndex <= 3 &&
+        incoming().explanation is string && incoming().explanation.size() <= 3000;
+    }
+
+    // 2. Student Submissions & Results
+    match /submissions/{submissionId} {
+      allow read: if isValidId(submissionId);
+      allow create: if isValidId(submissionId) &&
+        incoming().studentName is string && incoming().studentName.size() <= 100 &&
+        incoming().rollNumber is string && incoming().rollNumber.size() <= 50 &&
+        incoming().score is number && incoming().score >= 0 &&
+        incoming().totalQuestions is number && incoming().totalQuestions > 0 &&
+        incoming().percentage is number &&
+        incoming().isPassed is bool;
+      allow update, delete: if isValidId(submissionId);
+    }
+
+    // 3. Global Exam Configuration
+    match /config/{configId} {
+      allow read: if isValidId(configId);
+      allow write: if isValidId(configId) &&
+        incoming().timeLimitMinutes is number && incoming().timeLimitMinutes >= 1 && incoming().timeLimitMinutes <= 180 &&
+        incoming().passingPercentage is number && incoming().passingPercentage >= 0 && incoming().passingPercentage <= 100;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "SmartExam Pro - Online Examination Portal",
+  "description": "Responsive Online Exam Portal with Student Exam Room, Timer, Results Checking, and Admin Question & Result Management for Java, Data Structures, Python, and GK.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
